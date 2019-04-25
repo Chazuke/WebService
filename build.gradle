@@ -20,9 +20,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	
+	//JavaX
 	implementation 'javax.servlet:javax.servlet-api'
 	
 	//Jackson
 	implementation 'com.fasterxml.jackson.core:jackson-core'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	
+	//Third-Party
+	implementation 'net.spy:spymemcached:2.12.3'
 }

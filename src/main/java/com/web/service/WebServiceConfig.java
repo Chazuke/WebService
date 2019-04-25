@@ -8,6 +8,8 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.web.service.session.SessionClient;
+
 @Configuration
 @EnableWebMvc
 public class WebServiceConfig implements WebMvcConfigurer {
@@ -20,6 +22,11 @@ public class WebServiceConfig implements WebMvcConfigurer {
 	@Bean
 	ServletWebServerFactory servletWebServerFactory() {
 		return new TomcatServletWebServerFactory();
+	}
+
+	@Bean(destroyMethod = "destroy")
+	public SessionClient initializeSessionClient() throws Exception {
+		return new SessionClient();
 	}
 
 }

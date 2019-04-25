@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class WebServiceExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
-	protected ResponseEntity<WebServiceError> defaultExceptionHandler() {
-		WebServiceError error = new WebServiceError("Generic.Error");
-		return new ResponseEntity<WebServiceError>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+	protected ResponseEntity<WebServiceException> defaultExceptionHandler(Exception e) {
+		WebServiceException error = new WebServiceException(e.getMessage());
+		return new ResponseEntity<WebServiceException>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }
