@@ -8,6 +8,20 @@ service:
 session: 
     address: "192.168.0.107"
     port: 11211
+
+google:
+  authUrl: "https://accounts.google.com/o/oauth2/v2/auth"
+  clientId: "427896572355-gqpckukc9gtuqk82oh8hm6kks61krim1.apps.googleusercontent.com"
+  redirectUrl: "http://localhost:8080/api/signinresult"
+  responseType: "code"
+  scope:
+    userEmail: "https://www.googleapis.com/auth/userinfo.email"
+    userProfile: "https://www.googleapis.com/auth/userinfo.profile"
+  accessType: "online"
+  includeGrantedScopes: "true"
+  prompt:
+    selectAccount: "select_account"
+    consent: "consent"
     
 logging:
   level:
