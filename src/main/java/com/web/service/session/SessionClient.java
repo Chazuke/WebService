@@ -13,8 +13,8 @@ public class SessionClient {
 
 	public MemcachedClient client;
 
-	public SessionClient() throws IOException {
-		client = new MemcachedClient(new InetSocketAddress("192.168.0.107", 11211));
+	public SessionClient(String address, int port) throws IOException {
+		client = new MemcachedClient(new InetSocketAddress(address, port));
 	}
 
 	public void destroy() {
