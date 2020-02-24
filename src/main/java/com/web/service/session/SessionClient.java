@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.internal.OperationFuture;
 
 public class SessionClient {
 	Logger LOG = LoggerFactory.getLogger(SessionClient.class);
@@ -21,8 +22,8 @@ public class SessionClient {
 		client.shutdown();
 	}
 
-	public void set(String key, Object data) {
-		client.set(key, 0, data);
+	public OperationFuture<Boolean> set(String key, Object data) {
+		return client.set(key, 0, data);
 	}
 
 	public Object get(String key) {
@@ -31,6 +32,15 @@ public class SessionClient {
 
 	public Object gat(String key) {
 		return client.getAndTouch(key, 0);
+	}
+	
+	public SessionObject ensureSessionObjectExists(String sessionId) {
+		Object sessionObject = get(sessionId);
+		if (null == sessionObject) {
+			sessionObject = new SessionObject(sessionId);
+			set(sessionId, sessionObject);
+		}
+		return (SessionObject) sessionObject;
 	}
 
 }

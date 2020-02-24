@@ -11,17 +11,21 @@ session:
 
 google:
   authUrl: "https://accounts.google.com/o/oauth2/v2/auth"
-  clientId: "427896572355-gqpckukc9gtuqk82oh8hm6kks61krim1.apps.googleusercontent.com"
-  redirectUrl: "http://localhost:8080/api/signinresult"
+  clientId: "353579146814-vc3ht3jgbo4ntk3tdstc6f3q48e0v428.apps.googleusercontent.com"
+  redirectUrlConsent: "http://localhost:8080/api/fetchAccessTokens"
+  redirectUrlToken: "http://localhost:8080/api/home"
   responseType: "code"
   scope:
     userEmail: "https://www.googleapis.com/auth/userinfo.email"
     userProfile: "https://www.googleapis.com/auth/userinfo.profile"
-  accessType: "online"
+  accessType: "offline"
   includeGrantedScopes: "true"
   prompt:
     selectAccount: "select_account"
     consent: "consent"
+  tokenUrl: "https://oauth2.googleapis.com/token"
+  grantType: "authorization_code"
+  clientSecretPath: "C:\\git\\Chazuke\\Secrets\\WebService\\client_secret_353579146814-vc3ht3jgbo4ntk3tdstc6f3q48e0v428.apps.googleusercontent.com.json"
     
 logging:
   level:

@@ -13,6 +13,10 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	feginClientVersion = '10.7.4'
+}
+
 dependencies {
 	//Spring
 	implementation 'org.springframework.boot:spring-boot-starter'
@@ -30,4 +34,10 @@ dependencies {
 	//Third-Party
 	implementation 'net.spy:spymemcached:2.12.3'
 	implementation 'com.google.api-client:google-api-client:1.25.0'
+	
+	//Feign
+	implementation "io.github.openfeign:feign-okhttp:${feginClientVersion}"
+	implementation "io.github.openfeign:feign-gson:${feginClientVersion}"
+	implementation "io.github.openfeign:feign-slf4j:${feginClientVersion}"
+	implementation "io.github.openfeign.form:feign-form:3.8.0"
 }

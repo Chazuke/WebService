@@ -4,6 +4,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -20,6 +21,11 @@ public class WebServiceConfig implements WebMvcConfigurer {
 	@Bean
 	ServletWebServerFactory servletWebServerFactory() {
 		return new TomcatServletWebServerFactory();
+	}
+
+	@Bean
+	RestTemplate getRestTemplate() {
+		return new RestTemplate();
 	}
 
 }
