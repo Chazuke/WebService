@@ -1,4 +1,4 @@
-package com.web.service.google;
+package com.web.service.google.objects;
 
 import java.io.Serializable;
 

@@ -11,6 +11,8 @@ session:
 
 google:
   authUrl: "https://accounts.google.com/o/oauth2/v2/auth"
+  tokenUrl: "https://oauth2.googleapis.com"
+  peopleUrl: "https://people.googleapis.com"
   clientId: "353579146814-vc3ht3jgbo4ntk3tdstc6f3q48e0v428.apps.googleusercontent.com"
   redirectUrlConsent: "http://localhost:8080/api/fetchAccessTokens"
   redirectUrlToken: "http://localhost:8080/api/home"
@@ -23,7 +25,6 @@ google:
   prompt:
     selectAccount: "select_account"
     consent: "consent"
-  tokenUrl: "https://oauth2.googleapis.com/token"
   grantType: "authorization_code"
   clientSecretPath: "C:\\git\\Chazuke\\Secrets\\WebService\\client_secret_353579146814-vc3ht3jgbo4ntk3tdstc6f3q48e0v428.apps.googleusercontent.com.json"
     

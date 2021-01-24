@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,10 +20,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.web.service.config.WebServiceGoogleConfig;
-import com.web.service.google.GoogleAccessTokenRequest;
-import com.web.service.google.GoogleAccessTokenResponse;
-import com.web.service.google.GoogleFeignClient;
 import com.web.service.google.GoogleHelper;
+import com.web.service.google.GooglePeopleAPIFeignClient;
+import com.web.service.google.GoogleTokenAPIFeignClient;
+import com.web.service.google.objects.GoogleAccessTokenRequest;
+import com.web.service.google.objects.GoogleAccessTokenResponse;
+import com.web.service.google.objects.GoogleConsentParameters;
+import com.web.service.google.objects.GoogleName;
+import com.web.service.google.objects.GooglePerson;
 import com.web.service.session.SessionClient;
 
 @RestController
@@ -40,46 +45,50 @@ public class WebServiceController {
 	GoogleHelper googleHelper;
 
 	@Autowired
-	GoogleFeignClient googleFeignClient;
+	@Qualifier("GoogleTokenAPIFeignClient")
+	GoogleTokenAPIFeignClient googleTokenAPIFeignClient;
+
+	@Autowired
+	@Qualifier("GooglePeopleAPIFeignClient")
+	GooglePeopleAPIFeignClient googlePeopleAPIFeignClient;
 
 	@GetMapping("/signin")
 	public RedirectView getGoogleConsentURL(HttpServletRequest request) throws Exception {
 		LOG.info("Enter getGoogleConsentURL");
-		StringBuilder redirectURL = new StringBuilder(googleConfig.getAuthUrl());
-		redirectURL.append("?client_id=" + googleConfig.getClientId());
-		redirectURL.append("&redirect_uri="
-				+ URLEncoder.encode(googleConfig.getRedirectUrlConsent(), StandardCharsets.UTF_8.toString()));
-		redirectURL.append("&response_type=" + googleConfig.getResponseType());
 
-		redirectURL.append("&scope="
-				+ URLEncoder.encode(googleConfig.getScopeUserEmail() + " " + googleConfig.getScopeUserProfile(),
-						StandardCharsets.UTF_8.toString()));
-
-		redirectURL.append("&access_type=" + googleConfig.getAccessType());
+		GoogleConsentParameters params = new GoogleConsentParameters();
+		params.setClient_id(googleConfig.getClientId());
+		params.setRedirect_uri(
+				URLEncoder.encode(googleConfig.getRedirectUrlConsent(), StandardCharsets.UTF_8.toString()));
+		params.setResponse_type(googleConfig.getResponseType());
+		params.setScope(URLEncoder.encode(googleConfig.getScopeUserEmail() + " " + googleConfig.getScopeUserProfile(),
+				StandardCharsets.UTF_8.toString()));
+		params.setAccess_type(googleConfig.getAccessType());
 
 		String googleUUID = UUID.randomUUID().toString();
 		boolean iscallbackUuidSuccess = googleHelper.setSessionCallbackUUID(request.getSession().getId(), googleUUID);
 		if (!iscallbackUuidSuccess) {
 			throw new Exception("Internal Server Error");
 		}
-		redirectURL.append("&state=" + googleUUID);
 
-		redirectURL.append("&include_granted_scopes=" + googleConfig.getIncludeGrantedScopes());
+		params.setState(googleUUID);
+		params.setInclude_granted_scopes(googleConfig.getIncludeGrantedScopes());
+		params.setPrompt(
+				URLEncoder.encode(googleConfig.getPromptSelectAccount() + " " + googleConfig.getPromptConsent(),
+						StandardCharsets.UTF_8.toString()));
 
-//		redirectURL.append("&prompt="
-//				+ URLEncoder.encode(googleConfig.getPromptSelectAccount() + " " + googleConfig.getPromptConsent(),
-//						StandardCharsets.UTF_8.toString()));
+		LOG.debug("Constructed Google Consent Redirect URL:\n{}",
+				googleConfig.getAuthUrl() + params.getParameterString());
 
-		LOG.debug("Constructed Google Consent Redirect URL:\n{}", redirectURL.toString());
-
-		return new RedirectView(redirectURL.toString());
+		return new RedirectView(googleConfig.getAuthUrl() + params.getParameterString());
 	}
 
 	@GetMapping("/fetchAccessTokens")
 	public GoogleAccessTokenResponse getGoogleAccessToken(HttpServletRequest request) throws Exception {
 		LOG.info("Enter getGoogleConsentResult");
 
-		if (request.getParameter("code") != null) {
+		if (request.getParameter("code") != null && googleHelper.verifySessionCallbackUUID(request.getSession().getId(),
+				request.getParameter("state"))) {
 
 			GoogleAccessTokenRequest tokenRequest = new GoogleAccessTokenRequest();
 			tokenRequest.setClient_id(googleConfig.getClientId());
@@ -88,9 +97,17 @@ public class WebServiceController {
 			tokenRequest.setGrant_type(googleConfig.getGrantType());
 			tokenRequest.setRedirect_uri(googleConfig.getRedirectUrlConsent());
 
-			LOG.info("Fully Google Access Token Request Body String:\n {}", tokenRequest.toString());
+			LOG.info("Google Access Token Request:\n {}", tokenRequest.toString());
 
-			GoogleAccessTokenResponse response = googleFeignClient.getGoogleAccessToken(tokenRequest.toString());
+			GoogleAccessTokenResponse response = googleTokenAPIFeignClient
+					.getGoogleAccessToken(tokenRequest.toString());
+
+			if (null != response && null != response.getAccess_token()) {
+				GooglePerson userData = googlePeopleAPIFeignClient.getPersonalInfo(response.getAccess_token());
+				GoogleName[] names = userData.getNames();
+				LOG.info("Found Names: {}", names.toString());
+			}
+
 			return response;
 		} else {
 			return null;

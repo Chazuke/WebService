@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.service.config.WebServiceGoogleConfig;
+import com.web.service.google.objects.GoogleAccessTokenRequest;
 import com.web.service.session.SessionClient;
 import com.web.service.session.SessionObject;
 
@@ -48,6 +49,9 @@ public class GoogleHelper {
 
 	public boolean verifySessionCallbackUUID(String sessionId, String uuid) {
 		boolean response = false;
+		if (null == sessionId || null == uuid) {
+			return response;
+		}
 		try {
 			SessionObject sessionObject = sessionClient.ensureSessionObjectExists(sessionId);
 			if (uuid.equals(sessionObject.getGoogleUUID())) {
