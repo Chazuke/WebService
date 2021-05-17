@@ -1,0 +1,16 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${google_client_id}
+            client-secret: ${google_client_secret}
+          facebook:
+            client-id: ${facebook_client_id}
+            client-secret: ${google_client_secret}
+            
+services:
+  google:
+    people:
+      uri: https://www.people.googleapis.com/v1

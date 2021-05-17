@@ -1,9 +1,23 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.3.RELEASE'
-	id 'java'
+	id "java"
+	id "eclipse"
+	id "org.springframework.boot" version "2.4.2"
+	id "io.spring.dependency-management" version "1.0.11.RELEASE"
 }
 
-apply plugin: 'io.spring.dependency-management'
+ext {
+	// Spring Cloud
+	set('springCloudVersion', "2020.0.+")
+	
+	// Google
+	set('googlePeopleAPIVersion', "v1-rev20210223-1.31.0")
+	
+	// Apache
+	set('apacheCommonsLang3Version', "3.11")
+	
+	// Test
+	set('junitVersion', "5.7.+")
+}
 
 group = 'com.web.service'
 version = '0.0.1-SNAPSHOT'
@@ -11,9 +25,37 @@ sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
+	gradlePluginPortal()
+}
+
+test {
+    useJUnitPlatform()
 }
 
 dependencies {
+	// Spring Boot Starter
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	
+	// Spring Cloud
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	
+	// Google
+	implementation "com.google.apis:google-api-services-people:${googlePeopleAPIVersion}"
+	
+	// Apache
+	implementation "org.apache.commons:commons-lang3:${apacheCommonsLang3Version}"
+	
+	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
+
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+  }
 }
